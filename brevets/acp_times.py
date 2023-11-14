@@ -20,16 +20,15 @@ control_4_6 = {'start_dist': 400, 'end_dist': 600, 'min_speed': 15, 'max_speed':
 control_6_10 = {'start_dist': 600, 'end_dist': 1000, 'min_speed': 11.428, 'max_speed': 28}
 
 
-def control_st_calc(control, max_speed):
-   raw_time = control / max_speed
+def control_calc(control, speed):
+   raw_time = control / speed
    hour = math.floor(raw_time)
    frac_minutes = raw_time - hour
    minute = round(frac_minutes * 60)
    return_val = {'hour': hour, 'minute': minute}
-   return return_val
+   return raw_time
 
-def control_cl_calc(control, min_speed):
-   raw_time = control / min_speed
+def convert_to_hm(raw_time):
    hour = math.floor(raw_time)
    frac_minutes = raw_time - hour
    minute = round(frac_minutes * 60)
@@ -59,47 +58,58 @@ def open_time(control_dist_km, brevet_dist_km, brevet_start_time):
       control = control_dist_km
       
    if control <= 200:
-      time_result = control_st_calc(control, control_0_2['max_speed'])
+      raw_time = control_calc(control, control_0_2['max_speed'])
+      time_result = convert_to_hm(raw_time)
       hour = time_result['hour']
       minute = time_result['minute']
    elif control <= 400:
       #calcalute when distance is <=200
-      time_result_1 = control_st_calc(200, control_0_2['max_speed'])
+      raw_time_1 = control_calc(200, control_0_2['max_speed'])
    
       #calculate when distance is >200
       remain_control_dist = control - 200
-      time_result_2 = control_st_calc(remain_control_dist, control_2_4['max_speed'])
+      raw_time_2 = control_calc(remain_control_dist, control_2_4['max_speed'])
 
-      hour = time_result_1['hour'] + time_result_2['hour']
-      minute = time_result_1['minute'] + time_result_2['minute']
+      total_raw_time = raw_time_1 + raw_time_2
+      time_result = convert_to_hm(total_raw_time)
+
+      hour = time_result['hour']
+      minute = time_result['minute']
    elif control <= 600:
       #calcalute when distance is <=200
-      time_result_1 = control_st_calc(200, control_0_2['max_speed'])
+      raw_time_1 = control_calc(200, control_0_2['max_speed'])
 
       #calculate when distance is <=400
-      time_result_2 = control_st_calc(200, control_2_4['max_speed'])
+      raw_time_2 = control_calc(200, control_2_4['max_speed'])
 
       #calulate remaining distance with new start time
       remain_control_dist = control - 400
-      time_result_3 = control_st_calc(remain_control_dist, control_4_6['max_speed'])
+      raw_time_3 = control_calc(remain_control_dist, control_4_6['max_speed'])
       
-      hour = time_result_1['hour'] + time_result_2['hour'] + time_result_3['hour']
-      minute = time_result_1['minute'] + time_result_2['minute'] + time_result_3['minute']
+      total_raw_time = raw_time_1 + raw_time_2 + raw_time_3
+      time_result = convert_to_hm(total_raw_time)
+
+      hour = time_result['hour']
+      minute = time_result['minute']
    elif control <= 1000:
       #calcalute when distance is <=200
-      time_result_1 = control_st_calc(200, control_0_2['max_speed'])
+      raw_time_1= control_calc(200, control_0_2['max_speed'])
 
       #calculate when distance is <=400
-      time_result_2 = control_st_calc(200, control_2_4['max_speed'])
+      raw_time_2 = control_calc(200, control_2_4['max_speed'])
 
       #calulate when distance is <=600
-      time_result_3 = control_st_calc(200, control_4_6['max_speed'])
+      raw_time_3 = control_calc(200, control_4_6['max_speed'])
       
       #calulate remaing distance
       remain_control_dist = control - 600
-      time_result_4 = control_st_calc(remain_control_dist, control_6_10['max_speed'])
-      hour = time_result_1['hour'] + time_result_2['hour'] + time_result_3['hour'] + time_result_4['hour']
-      minute = time_result_1['minute'] + time_result_2['minute'] + time_result_3['minute'] + time_result_4['minute']
+      raw_time_4 = control_calc(remain_control_dist, control_6_10['max_speed'])
+
+      total_raw_time = raw_time_1 + raw_time_2 + raw_time_3 + raw_time_4
+      time_result = convert_to_hm(total_raw_time)
+
+      hour = time_result['hour']
+      minute = time_result['minute']
 
    start_time = time.shift(hours=hour, minutes=minute)
    return start_time
@@ -131,10 +141,11 @@ def close_time(control_dist_km, brevet_dist_km, brevet_start_time):
    if control == 0:
       hour = 1
    elif control <= 60:
-      time_result = control_st_calc(control, 20)
+      total_raw_time = control_calc(control, 20)
+      time_result = convert_to_hm(total_raw_time)
+
       hour = time_result['hour'] + 1
       minute = time_result['minute']
-
    #time limits for races
    elif control == 200 and brevet_dist_km == 200:
       hour = 13
@@ -153,17 +164,24 @@ def close_time(control_dist_km, brevet_dist_km, brevet_start_time):
       minute = 0
 
    elif control <= 600:
-      time_result = control_st_calc(control, control_0_2['min_speed'])
+      total_raw_time = control_calc(control, control_0_2['min_speed'])
+      time_result = convert_to_hm(total_raw_time)
+
       hour = time_result['hour']
       minute = time_result['minute']
+      
    elif control <= 1000:
       #calcalute when distance is <=600
-      time_result_1 = control_st_calc(600, control_4_6['min_speed'])
+      raw_time_1 = control_calc(600, control_4_6['min_speed'])
       #calulate remaining distance with new start time
       remain_control_dist = control - 600
-      time_result_2 = control_st_calc(remain_control_dist, control_6_10['min_speed'])
-      hour = time_result_1['hour'] + time_result_2['hour']
-      minute = time_result_1['minute'] + time_result_2['minute']
+      raw_time_2 = control_calc(remain_control_dist, control_6_10['min_speed'])
+
+      total_raw_time = raw_time_1 + raw_time_2
+      time_result = convert_to_hm(total_raw_time)
+
+      hour = time_result['hour']
+      minute = time_result['minute']
 
    close_time = time.shift(hours=hour, minutes=minute)
    return close_time
