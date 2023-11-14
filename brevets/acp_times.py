@@ -134,9 +134,24 @@ def close_time(control_dist_km, brevet_dist_km, brevet_start_time):
       time_result = control_st_calc(control, 20)
       hour = time_result['hour'] + 1
       minute = time_result['minute']
+
+   #time limits for races
    elif control == 200 and brevet_dist_km == 200:
       hour = 13
       minute = 30
+   elif control == 300 and brevet_dist_km == 300:
+      hour = 20
+      minute = 0
+   elif control == 400 and brevet_dist_km == 400:
+      hour = 27
+      minute = 0
+   elif control == 600 and brevet_dist_km == 600:
+      hour = 40
+      minute = 0
+   elif control == 1000 and brevet_dist_km == 1000:
+      hour = 75
+      minute = 0
+
    elif control <= 600:
       time_result = control_st_calc(control, control_0_2['min_speed'])
       hour = time_result['hour']

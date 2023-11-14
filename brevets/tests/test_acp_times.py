@@ -1,5 +1,5 @@
 """
-Nose tests for acp_times.py
+Nose tests for acp_times.py and for DB insertion and retrival
 
 Write your tests HERE AND ONLY HERE.
 """
@@ -8,9 +8,44 @@ import nose    # Testing framework
 import logging
 import arrow
 import acp_times
+import flask_brevets
 logging.basicConfig(format='%(levelname)s:%(message)s',
                     level=logging.WARNING)
 log = logging.getLogger(__name__)
+
+
+def test_DB_insertion():
+    control_1_km = 0
+    miles = 0.0
+    location = "start"
+    
+    start_time = "2021-01-01T00:00"
+    brevet_dist_km = 200
+    control_1_km = 0
+    open_time_1 = "2021-01-01T00:00"
+    close_time_1 = "2021-01-01T01:00"
+
+    _id = flask_brevets.insert_brevet([{
+                                    "km": control_1_km, 
+                                    "miles": miles,
+                                    "location": location,
+                                    "open_time": open_time_1,
+                                    "close_time": close_time_1
+                                }], start_time, brevet_dist_km)
+    assert isinstance(_id, str)
+
+
+def test_DB_retrival():
+    result = flask_brevets.get_brevet()
+    assert result[0][0]["km"] ==  0
+    assert result[0][0]["miles"] == 0.0
+    assert result[0][0]["location"] == "start"
+    assert result[0][0]["open_time"] == "2021-01-01T00:00"
+    assert result[0][0]["close_time"] == "2021-01-01T01:00"
+    assert result[1] == "2021-01-01T00:00"
+    assert result[2] == 200
+
+
 
 #example #1 from https://rusa.org/pages/acp-brevet-control-times-calculator
 
