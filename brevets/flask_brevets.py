@@ -21,7 +21,7 @@ from pymongo import MongoClient
 app = flask.Flask(__name__)
 CONFIG = config.configuration()
 
-client = MongoClient('mongodb://' + os.environ['MONGODB_HOSTNAME'], 27017)
+client = MongoClient('mongodb://brevetdb', 27017)
 
 # Use database "brevet"
 db = client.brevet
