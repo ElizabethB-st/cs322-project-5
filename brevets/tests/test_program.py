@@ -8,7 +8,7 @@ import nose    # Testing framework
 import logging
 import arrow
 import acp_times
-import flask_brevets
+import mongo_brevets
 logging.basicConfig(format='%(levelname)s:%(message)s',
                     level=logging.WARNING)
 log = logging.getLogger(__name__)
@@ -25,7 +25,7 @@ def test_DB_insertion():
     open_time_1 = "2021-01-01T00:00"
     close_time_1 = "2021-01-01T01:00"
 
-    _id = flask_brevets.insert_brevet([{
+    _id = mongo_brevets.insert_brevet([{
                                     "km": control_1_km, 
                                     "miles": miles,
                                     "location": location,
@@ -36,7 +36,7 @@ def test_DB_insertion():
 
 
 def test_DB_retrival():
-    result = flask_brevets.get_brevet()
+    result = mongo_brevets.get_brevet()
     assert result[0][0]["km"] ==  0
     assert result[0][0]["miles"] == 0.0
     assert result[0][0]["location"] == "start"
